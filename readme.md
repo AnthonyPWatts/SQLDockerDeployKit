@@ -1,17 +1,29 @@
 # MoviesDatabase Project
 
 ## Description
-MoviesDatabase is a SQL Server-based project, set up within a Docker container, designed for rapid deployment and ease of use. It serves as an ideal starting point for anyone looking to expedite the creation of API or other software demos. With a pre-configured database and sample data for movies and actors, it offers a quick-to-get-running DB environment, allowing developers to focus on their application logic rather than database setup. This makes it a valuable tool for demonstrations, prototypes, or any scenario where a reliable and easy-to-set-up database is needed.
+MoviesDatabase is a SQL Server-based project, designed for rapid deployment in Docker. Ideal for API or software demos, it provides a pre-configured database with sample data.
+
+## Quick Start with Docker: 
+Pull and run the Docker image to get started quickly:
+`docker pull ghcr.io/anthonypwatts/moviedatabase/moviesdb:main`
+`docker run -d -p 1433:1433 ghcr.io/anthonypwatts/moviedatabase/moviesdb:main`
+
+This command will start the Docker container in detached mode (-d) and map port 1433 from the container to port 1433 on the host machine, allowing SQL Server connections.
+
 ## Features
 - SQL Server setup in Docker.
 - Automated database initialization with `CombinedInit.sql`.
 - Sample data for movies and actors.
 
-## Installation
+
+## Using the Repository
+For customization or development:
 1. Clone this repository.
-2. Consider changing the sa password!
-2. Build the Docker image: `docker build -t mssql-moviesdb .`
-3. Run the Docker container: `docker run -d -p 1433:1433 mssql-moviesdb`
+2. Optionally change the SA password throughout.
+3. Build the Docker image: `docker build -t mssql-moviesdb .`
+4. Run the Docker container: `docker run -d -p 1433:1433 mssql-moviesdb`
+
+
 
 ## Usage
 Connect to the SQL Server instance using tools like Azure Data Studio or SQL Server Management Studio:
