@@ -25,7 +25,7 @@ Click the "Deploy to Azure" button below. You'll be redirected to the Azure port
 
 Fill in the necessary parameters and deploy.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/YourEncodedTemplateURL)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FMovieDatabase%2Fmain%2Fazure-deploy-moviedb.json)
 
 
 ## Use Case 3 - Using the Repository
