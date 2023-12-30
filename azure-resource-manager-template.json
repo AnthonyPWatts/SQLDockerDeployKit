@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2021-03-01",
+      "name": "moviedbcontainergroup",
+      "location": "eastus",
+      "properties": {
+        "containers": [
+          {
+            "name": "moviedbcontainer",
+            "properties": {
+              "image": "ghcr.io/anthonypwatts/moviedatabase/moviesdb:main",
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 2.0
+                }
+              },
+              "ports": [
+                {
+                  "port": 1433
+                }
+              ]
+            }
+          }
+        ],
+        "osType": "Linux",
+        "restartPolicy": "OnFailure",
+        "ipAddress": {
+          "type": "Public",
+          "ports": [
+            {
+              "protocol": "tcp",
+              "port": 1433
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
