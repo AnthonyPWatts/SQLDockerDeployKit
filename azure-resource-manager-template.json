@@ -12,7 +12,7 @@
           {
             "name": "moviedbcontainer",
             "properties": {
-              "image": "ghcr.io/anthonypwatts/moviedatabase/moviesdb:main",
+              "image": "ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main",
               "resources": {
                 "requests": {
                   "cpu": 0.5,

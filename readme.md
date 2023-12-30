@@ -1,4 +1,4 @@
-# MoviesDatabase Project
+# SQLDockerDeployKit Project
 
 ## Description
 Originally designed for a 'Movies' database demo, this project has evolved into a versatile tool for deploying SQL Server databases in Docker containers. It's ideal for rapid setup of database environments in development, testing, and demonstrations.
@@ -26,7 +26,7 @@ Click the "Deploy to Azure" button below. You'll be redirected to the Azure port
 
 Fill in the necessary parameters and deploy.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FMovieDatabase%2Fmain%2Fazure-deploy-moviedb.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FSQLDockerDeployKit%2Fmain%2Fazure-resource-manager-template.json)
 
 ## Extending and Customizing
 For customization or development:
@@ -56,7 +56,7 @@ General instructions for changing the SA password on SQL Server:
 
 
 ## Contributing
-Contributions to the MoviesDatabase project are welcome. Please fork the repository and submit a pull request with your changes.
+Contributions to the SQLDockerDeployKit project are welcome. Please fork the repository and submit a pull request with your changes.
 
 ## License
 Go forth and use my code!
