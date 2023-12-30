@@ -9,7 +9,7 @@ MoviesDatabase is a SQL Server-based project, designed for rapid deployment in D
 - Automated database initialization with `CombinedInit.sql`.
 - Sample data for movies and actors.
 
-
+- 
 ## Use Case 1 - Quick Start with Docker
 Pull and run the Docker image to get started quickly:
 `docker pull ghcr.io/anthonypwatts/moviedatabase/moviesdb:main`
@@ -42,6 +42,17 @@ Connect to the SQL Server instance using tools like Azure Data Studio or SQL Ser
 - Authentication: SQL Server Authentication
 - Username: `sa`
 - Password: [Your sa password] or if unchanged the image default is: `<YourStrong!Passw0rd>`
+
+
+### TIP: Changing the SA Password:
+General instructions for changing the SA password on SQL Server:
+1. Connect to your SQL Server instance using SQL Server Management Studio or another SQL client. (the default password is: `<YourStrong!Passw0rd>`)
+2. Once connected, open a new query window.
+3. Run the following SQL command:
+    `ALTER LOGIN sa WITH PASSWORD = 'YourNewStrongPassword!';`
+    (Replace `YourNewStrongPassword!` with your desired new password. Ensure your new password adheres to SQL Server's password policy for security)
+4. Execute the query to update the password.
+
 
 ## Contributing
 Contributions to the MoviesDatabase project are welcome. Please fork the repository and submit a pull request with your changes.
