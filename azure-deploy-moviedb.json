@@ -5,12 +5,12 @@
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
       "apiVersion": "2021-03-01",
-      "name": "MovieDBContainerGroup",
+      "name": "moviedbcontainergroup",
       "location": "eastus",
       "properties": {
         "containers": [
           {
-            "name": "MovieDBContainer",
+            "name": "moviedbcontainer",
             "properties": {
               "image": "ghcr.io/anthonypwatts/moviedatabase/moviesdb:main",
               "resources": {
