@@ -15,8 +15,8 @@
               "image": "ghcr.io/anthonypwatts/moviedatabase/moviesdb:main",
               "resources": {
                 "requests": {
-                  "cpu": 0.5, // Adjust as needed for very low requirements
-                  "memoryInGb": 1.0 // Adjust as needed for very low requirements
+                  "cpu": 0.5,
+                  "memoryInGb": 2.0
                 }
               },
               "ports": [
