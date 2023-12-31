@@ -54,20 +54,17 @@ This project is designed for flexibility and can be tailored to fit specific nee
 
 4. **ARM Template for Azure**: Use or modify the included ARM template for easy Azure deployment.
 
-
-
 For customization or development:
-1. Fork or clone this repository as appropriate.
-2. If forked, change the sa password used in `Dockerfile` and in `entrypoint.sh`.
-3. Amend as required, e.g. replacing `CombinedInit.sql`
-4. Build the Docker image: 
-```shell
-docker build -t mssql-moviesdb .
-```
+a. Fork or clone this repository as appropriate.
+b. Amend as required, e.g. replacing `CombinedInit.sql`
+c. Build the Docker image: 
+    ```shell
+    docker build -t mssqldb .
+    ```
 5. Run the Docker container: 
-```shell
-docker run -d -p 1433:1433 mssql-moviesdb
-```
+   ```shell
+    docker run --name MyDatabaseContainer -e DB_NAME=myCustomDb -e SA_PASSWORD=mySecurePassword -d -p 1433:1433 mssqldb
+    ```
 6. Use or amend the provided ARM template for easy Azure deployments.
 
 ## Connecting to the Database
@@ -75,12 +72,12 @@ Connect to the SQL Server instance using tools like Azure Data Studio or SQL Ser
 - Server: e.g., `localhost,1433`
 - Authentication: SQL Server Authentication
 - Username: `sa`
-- Password: [Your sa password] or if unchanged the image default is: `<YourStrong!Passw0rd>`
+- Password: [Your sa password]
 
 
 ### TIP: Changing the SA Password:
 General instructions for changing the SA password on SQL Server:
-1. Connect to your SQL Server instance using SQL Server Management Studio or another SQL client. (the default password is: `<YourStrong!Passw0rd>`)
+1. Connect to your SQL Server instance using SQL Server Management Studio or another SQL client.
 2. Once connected, open a new query window.
 3. Run the following SQL command:
     `ALTER LOGIN sa WITH PASSWORD = 'YourNewStrongPassword!';`
