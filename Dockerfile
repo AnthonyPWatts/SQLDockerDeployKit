@@ -1,12 +1,8 @@
-ENV DB_NAME=defaultDbName
-ENV SA_PASSWORD=YourStrong!Passw0rd
-
 # Use the official Microsoft SQL Server 2019 image as the base image
 FROM mcr.microsoft.com/mssql/server:2019-latest
 
 # Set the required environment variables for SQL Server
 ENV ACCEPT_EULA=Y
-ENV SA_PASSWORD=<YourStrong!Passw0rd>
 
 # Temporarily switch to root user to change file permissions
 USER root
