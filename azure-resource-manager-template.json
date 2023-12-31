@@ -1,6 +1,21 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dbName": {
+      "type": "string",
+      "defaultValue": "myDatabase",
+      "metadata": {
+        "description": "Name of the SQL database"
+      }
+    },
+    "saPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the SQL Server System Administrator account"
+      }
+    }
+  },
   "resources": [
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
@@ -19,6 +34,16 @@
                   "memoryInGb": 2.0
                 }
               },
+              "environmentVariables": [
+                {
+                  "name": "DB_NAME",
+                  "value": "[parameters('dbName')]"
+                },
+                {
+                  "name": "SA_PASSWORD",
+                  "value": "[parameters('saPassword')]"
+                }
+              ],
               "ports": [
                 {
                   "port": 1433
