@@ -11,12 +11,15 @@ Originally designed for a 'Movies' database demo, this project has evolved into 
 
 ## Deployment Options
 ### Option 1 - Quick Start with Docker
-To get started quickly:
 Pull the image from the GitHub Container Registry:
-`docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main`
+```shell 
+docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main
+```
 
 Start the Docker container in detached mode (-d) and map port 1433 from the container to port 1433 on the host machine, allowing SQL Server connections:
-`docker run -d -p 1433:1433 ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main`
+```shell
+docker run -d -p 1433:1433 ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main
+```
 
 
 ### Option 2 - Deploy to Azure
@@ -33,8 +36,14 @@ For customization or development:
 1. Fork or clone this repository as appropriate.
 2. If forked, change the sa password used in `Dockerfile` and in `entrypoint.sh`.
 3. Amend as required, e.g. replacing `CombinedInit.sql`
-4. Build the Docker image: `docker build -t mssql-moviesdb .`
-5. Run the Docker container: `docker run -d -p 1433:1433 mssql-moviesdb`
+4. Build the Docker image: 
+```shell
+docker build -t mssql-moviesdb .
+```
+5. Run the Docker container: 
+```shell
+docker run -d -p 1433:1433 mssql-moviesdb
+```
 6. Use or amend the provided ARM template for easy Azure deployments.
 
 ## Connecting to the Database
