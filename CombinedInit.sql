@@ -1,8 +1,12 @@
--- Create the MoviesDB database
-CREATE DATABASE MoviesDB;
+-- The :setvar command is a SQLCMD directive and is not standard T-SQL, 
+-- so it's normal for some IDEs to flag it as incorrect
+:setvar DBName "DefaultDBName"
+
+-- Create the database
+CREATE DATABASE [$(DBName)];
 GO
 
-USE MoviesDB;
+USE [$(DBName)];
 GO
 
 -- Create the Movies table. Genre and Director should not be implemented this way in non-demo code
