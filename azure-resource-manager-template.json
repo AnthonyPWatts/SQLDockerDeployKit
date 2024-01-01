@@ -4,7 +4,6 @@
   "parameters": {
     "dbName": {
       "type": "string",
-      "defaultValue": "myDatabase",
       "metadata": {
         "description": "Name of the SQL database"
       }
