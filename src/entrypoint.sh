@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "Executing entrypoint.sh"
 # Start SQL Server in the background
 /opt/mssql/bin/sqlservr &
 
