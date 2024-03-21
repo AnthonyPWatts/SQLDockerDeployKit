@@ -13,13 +13,9 @@ RUN mkdir -p /tmp/app/SQLScripts
 WORKDIR /tmp/app
 
 # Copy the initialization script and entrypoint script into the container
-COPY SQLScripts /tmp/app/src/SQLScripts/
+COPY ./src/SQLScripts /tmp/app/src/SQLScripts/
 
-# Verify the presence of files
-RUN ls -l /tmp/app/src/SQLScripts/ 
-
-COPY entrypoint.sh /tmp/app/src
-RUN ls -l /tmp/app/src/entrypoint.sh
+COPY ./src/entrypoint.sh /tmp/app/src
 
 
 # Grant execute permissions on the entrypoint script
