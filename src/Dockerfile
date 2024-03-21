@@ -29,4 +29,4 @@ RUN chmod +x /tmp/app/entrypoint.sh
 USER mssql
 
 # Set the entrypoint to the entrypoint script
-ENTRYPOINT ["/tmp/app/entrypoint.sh"]
+ENTRYPOINT ["/tmp/app/src/entrypoint.sh"]
