@@ -16,10 +16,10 @@ WORKDIR /tmp/app
 COPY SQLScripts /tmp/app/SQLScripts/
 
 # Verify the presence of files
-RUN ls -l /tmp/app/SQLScripts/ 
+RUN ls -l /tmp/app/src/SQLScripts/ 
 
 COPY entrypoint.sh /tmp/app/
-RUN ls -l /tmp/app/entrypoint.sh
+RUN ls -l /tmp/app/src/entrypoint.sh
 
 
 # Grant execute permissions on the entrypoint script
