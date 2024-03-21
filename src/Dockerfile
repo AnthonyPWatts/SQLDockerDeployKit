@@ -9,11 +9,11 @@ ENV SA_PASSWORD=<YourStrong!Passw0rd>
 USER root
 
 # Create a directory in /tmp for scripts (to avoid permission issues)
-RUN mkdir -p /tmp/app
+RUN mkdir -p /tmp/app/SQLScripts
 WORKDIR /tmp/app
 
 # Copy the initialization script and entrypoint script into the container
-COPY CombinedInit.sql /tmp/app/
+COPY SQLScripts /tmp/app/SQLScripts/
 COPY entrypoint.sh /tmp/app/
 
 # Grant execute permissions on the entrypoint script
