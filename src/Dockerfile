@@ -18,12 +18,12 @@ COPY SQLScripts /tmp/app/SQLScripts/
 # Verify the presence of files
 RUN ls -l /tmp/app/src/SQLScripts/ 
 
-COPY entrypoint.sh /tmp/app/
+COPY entrypoint.sh /tmp/app/src
 RUN ls -l /tmp/app/src/entrypoint.sh
 
 
 # Grant execute permissions on the entrypoint script
-RUN chmod +x /tmp/app/entrypoint.sh
+RUN chmod +x /tmp/app/src/entrypoint.sh
 
 # Switch back to the mssql user
 USER mssql
