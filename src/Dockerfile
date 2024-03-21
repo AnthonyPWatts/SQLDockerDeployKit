@@ -13,7 +13,7 @@ RUN mkdir -p /tmp/app/SQLScripts
 WORKDIR /tmp/app
 
 # Copy the initialization script and entrypoint script into the container
-COPY SQLScripts /tmp/app/SQLScripts/
+COPY SQLScripts /tmp/app/src/SQLScripts/
 
 # Verify the presence of files
 RUN ls -l /tmp/app/src/SQLScripts/ 
