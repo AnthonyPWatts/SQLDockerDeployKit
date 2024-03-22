@@ -5,14 +5,14 @@
     {
       "type": "Microsoft.ContainerInstance/containerGroups",
       "apiVersion": "2021-03-01",
-      "name": "moviedbcontainergroup",
+      "name": "databasecontainergroup",
       "location": "eastus",
       "properties": {
         "containers": [
           {
-            "name": "moviedbcontainer",
+            "name": "databasecontainer",
             "properties": {
-              "image": "ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main",
+              "image": "ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main",
               "resources": {
                 "requests": {
                   "cpu": 0.5,

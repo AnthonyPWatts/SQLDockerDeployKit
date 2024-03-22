@@ -21,7 +21,7 @@ for sql_file in $SQL_SCRIPTS_PATH/*.sql; do
     # Check if any errors occurred during script execution
     if [[ "$OUTPUT" == *"Error"* ]]; then
         echo "Error: An error occurred during script execution."
-        # You can choose to exit the loop or handle the error as needed
+        # TODO: Exit the loop or handle the error as needed
     else
         echo "Script execution successful."
     fi

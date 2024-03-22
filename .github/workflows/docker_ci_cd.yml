@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/moviesdb
+  IMAGE_NAME: ${{ github.repository }}/database-container
 
 jobs:
   build-and-push-image:
