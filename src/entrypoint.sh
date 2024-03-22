@@ -12,7 +12,7 @@ for sql_file in $SQL_SCRIPTS_PATH/*.sql; do
 
     # Execute SQL initialization script and capture output
     echo "Executing $sql_file"
-    OUTPUT=$(sqlcmd -S localhost -U SA -P "<YourStrong!Passw0rd>" -i "$sql_file" -b)
+    OUTPUT=$( /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "<YourStrong!Passw0rd>" -i "$sql_file")
 
     # Log output of script execution
     echo "Output of $sql_file:"
