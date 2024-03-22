@@ -46,12 +46,12 @@ By utilizing the SQLDockerDeployKit, users can significantly reduce the time and
 ####  (if you want to work with the unchanged MoviesDB, running locally)
 Pull the image from the GitHub Container Registry:
 ```shell 
-docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main
+docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 ```
 
 Start the Docker container in detached mode (-d) and map port 1433 from the container to port 1433 on the host machine, allowing SQL Server connections:
 ```shell
-docker run -d -p 1433:1433 ghcr.io/anthonypwatts/sqldockerdeploykit/moviesdb:main
+docker run -d -p 1433:1433 ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 ```
 
 
