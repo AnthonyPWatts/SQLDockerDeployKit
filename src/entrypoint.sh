@@ -7,11 +7,27 @@ echo "Executing entrypoint.sh"
 sleep 30s
 
 # Run the initialization script from the correct location
-SQL_SCRIPTS_PATH="/tmp/app/SQLScripts"
+SQL_SCRIPTS_PATH="/tmp/app/src/SQLScripts"
 for sql_file in $SQL_SCRIPTS_PATH/*.sql; do
+
+    # Execute SQL initialization script and capture output
     echo "Executing $sql_file"
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "<YourStrong!Passw0rd>" -i "$sql_file"
+    OUTPUT=$(sqlcmd -S localhost -U SA -P "<YourStrong!Passw0rd>" -i "$sql_file" -b)
+
+    # Log output of script execution
+    echo "Output of $sql_file:"
+    echo "$OUTPUT"
+
+    # Check if any errors occurred during script execution
+    if [[ "$OUTPUT" == *"Error"* ]]; then
+        echo "Error: An error occurred during script execution."
+        # You can choose to exit the loop or handle the error as needed
+    else
+        echo "Script execution successful."
+    fi
+
 done
+
 
 # Keep the container running
 tail -f /dev/null
