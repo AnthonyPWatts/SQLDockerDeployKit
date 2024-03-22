@@ -5,11 +5,6 @@ FROM mcr.microsoft.com/mssql/server:2019-latest
 ENV ACCEPT_EULA=Y
 ENV SA_PASSWORD=<YourStrong!Passw0rd>
 
-# Explicit install of SQL Server command-line tools (sqlcmd)
-RUN apt-get update \
-    && apt-get install -y mssql-tools unixodbc-dev \
-    && ln -s /opt/mssql-tools/bin/sqlcmd /usr/local/bin/sqlcmd \
-    && ln -s /opt/mssql-tools/bin/bcp /usr/local/bin/bcp
 
 # Temporarily switch to root user to change file permissions
 USER root
