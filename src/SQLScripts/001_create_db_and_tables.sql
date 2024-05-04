@@ -34,8 +34,8 @@ PRINT 'Creating MoviesActors table...'
 CREATE TABLE MoviesActors (
     MovieID INT,
     ActorID INT,
-    FOREIGN KEY (MovieID) REFERENCES Movies(ID),
-    FOREIGN KEY (ActorID) REFERENCES Actors(ID)
+    FOREIGN KEY (MovieID) REFERENCES Movies(ID) ON DELETE CASCADE,
+    FOREIGN KEY (ActorID) REFERENCES Actors(ID) ON DELETE CASCADE
 );
 GO
 PRINT 'MoviesActors table created successfully'
