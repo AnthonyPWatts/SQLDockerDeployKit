@@ -6,23 +6,30 @@ ENV ACCEPT_EULA=Y
 ENV SA_PASSWORD=<YourStrong!Passw0rd>
 
 
-# Temporarily switch to root user to change file permissions
+# Temporarily switch to root for package installation
 USER root
 
-# Create a directory in /tmp for scripts (to avoid permission issues)
+# Update package lists and install required tools
+RUN apt-get update && apt-get install -y \
+    mssql-tools unixodbc-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add mssql-tools to the PATH variable
+ENV PATH=${PATH}:/opt/mssql-tools/bin
+
+# Create needed directories
 RUN mkdir -p /tmp/app/SQLScripts
+
+# Set working directory
 WORKDIR /tmp/app
 
-# Copy the initialization script and entrypoint script into the container
-COPY ./src/SQLScripts /tmp/app/src/SQLScripts/
-
-COPY ./src/entrypoint.sh /tmp/app/src
-
+# Copy scripts into container - didn't work so currently attempting the whole src folder
+COPY src /tmp/app/src/
 
 # Grant execute permissions on the entrypoint script
-RUN chmod +x /tmp/app/src/entrypoint.sh
+RUN chmod +x /tmp/app/src/entrypoint.sh && chown -R mssql /tmp/app
 
-# Switch back to the mssql user
+# Switch back to the SQL Server user
 USER mssql
 
 # Set the entrypoint to the entrypoint script
