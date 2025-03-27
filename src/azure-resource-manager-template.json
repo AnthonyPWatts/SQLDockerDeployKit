@@ -6,7 +6,7 @@
       "type": "Microsoft.ContainerInstance/containerGroups",
       "apiVersion": "2021-03-01",
       "name": "databasecontainergroup",
-      "location": "eastus",
+      "location": "uksouth",
       "properties": {
         "containers": [
           {
