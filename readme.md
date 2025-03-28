@@ -87,7 +87,7 @@ Before deploying with Terraform, ensure you are authenticated with Azure:
 Once authenticated, proceed with the Terraform steps outlined below.
 1. Ensure you have [Terraform installed](https://developer.hashicorp.com/terraform/downloads) on your system.
 2. Navigate to the `src` folder where the `main.tf` file is located.
-3. Initialize Terraform to download the required providers:
+3. Initialise Terraform to download the required providers:
    ```shell
    terraform init
    ```
@@ -151,7 +151,7 @@ General instructions for changing the SA password on SQL Server:
 ## Contributing
 Contributions to the SQLDockerDeployKit project are welcome. Please fork the repository and submit a pull request with your changes.
 
-## License
+## Licence
 
 This project is released into the public domain. Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, for any purpose, commercial or non-commercial, and by any means. There are no restrictions. Use it as you see fit.
 
