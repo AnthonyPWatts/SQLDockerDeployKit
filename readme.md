@@ -154,8 +154,3 @@ Contributions to the SQLDockerDeployKit project are welcome. Please fork the rep
 ## Licence
 
 This project is released into the public domain. Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, for any purpose, commercial or non-commercial, and by any means. There are no restrictions. Use it as you see fit.
-
-
-
-## Contact
-Tony Watts - anthonypwatts@gmail.com
