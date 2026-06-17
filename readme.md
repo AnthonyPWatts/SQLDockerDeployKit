@@ -49,13 +49,13 @@ docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 
 Start the Docker container in detached mode (-d) and map port 1433 from the container to port 1433 on the host machine, allowing SQL Server connections:
 ```shell
-docker run -d -p 1433:1433 ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
+docker run -d -p 1433:1433 -e "SA_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 ```
 
 
 ### Option 2 - Quick Deploy to Azure with ARM Template
 ####  (if you want to work with the unchanged MoviesDB, running in the cloud)
-Deploy the latest build of this project's image (as generated in the CI/CD pipeline and deployed to GitHub Container Registry) to Azure Container Instances using the Azure Resource Manager (ARM) template. The template is configured to set up the environment with reasonable default configurations and ports.
+Deploy the latest build of this project's image (as generated in the CI/CD pipeline and deployed to GitHub Container Registry) to Azure Container Instances using the Azure Resource Manager (ARM) template. The template is configured to set up the environment with reasonable default configurations and ports, and prompts for the SQL Server System Administrator password.
 
 Click the "Deploy to Azure" button below. You'll be redirected to the Azure portal.
 
@@ -93,11 +93,11 @@ Once authenticated, proceed with the Terraform steps outlined below.
    ```
 4. Review the execution plan to ensure the resources will be created as expected:
    ```shell
-   terraform plan
+   terraform plan -var "sa_password=YourStrong!Passw0rd"
    ```
 5. Apply the Terraform configuration to deploy the resources:
    ```shell
-   terraform apply
+   terraform apply -var "sa_password=YourStrong!Passw0rd"
    ```
    Confirm the prompt with `yes` to proceed with the deployment.
 
@@ -107,14 +107,14 @@ Example connection details:
 - Server: `<DNS_NAME>:1433`
 - Authentication: SQL Server Authentication
 - Username: `sa`
-- Password: `<YourStrong!Passw0rd>` (or the password you configured in the Docker image).
+- Password: the `sa_password` value supplied to Terraform.
 
 ---
 
 ## Extending and Customising SQLDockerDeployKit
 For customisation or development:
 1. Fork or clone this repository as appropriate.
-2. If forked, change the sa password used in `Dockerfile` and in `entrypoint.sh`.
+2. Choose a strong SA password and pass it to the container as the `SA_PASSWORD` environment variable.
 3. Amend the SQL in src/SQLScripts as required. Note that the scripts are executed sequentially, so follow the 001, 002, 003 pattern.
 4. Build the Docker image from the repository root (you can replace 'sqldockerdeploykit' with your preferred image name): 
 ```shell
@@ -122,7 +122,7 @@ docker build -t sqldockerdeploykit -f src/Dockerfile .
 ```
 5. Run the Docker container: 
 ```shell
-docker run --name myDatabaseContainer -d -p 1433:1433 sqldockerdeploykit
+docker run --name myDatabaseContainer -d -p 1433:1433 -e "SA_PASSWORD=YourStrong!Passw0rd" sqldockerdeploykit
 ```
 6. Use or amend the provided IaC (infrastructure as code, e.g. ARM, Terraform) templates for easy cloud deployments.
 
@@ -133,13 +133,13 @@ Connect to the SQL Server instance using tools like Azure Data Studio (soon to b
 - Server: e.g., `localhost,1433`
 - Authentication: SQL Server Authentication
 - Username: `sa`
-- Password: [Your sa password] or if unchanged the image default is: `<YourStrong!Passw0rd>`
+- Password: the `SA_PASSWORD` value supplied when the container was started.
 
 ![ADS Connection](project-docs/images/ads-connected-local.png "Azure Data Studio Local Connection")
 
 ### TIP: Changing the SA Password:
 General instructions for changing the SA password on SQL Server:
-1. Connect to your SQL Server instance using SQL Server Management Studio or another SQL client. (the default password is: `<YourStrong!Passw0rd>`)
+1. Connect to your SQL Server instance using SQL Server Management Studio or another SQL client.
 2. Once connected, open a new query window.
 3. Run the following SQL command:
     `ALTER LOGIN sa WITH PASSWORD = 'YourNewStrongPassword!';`

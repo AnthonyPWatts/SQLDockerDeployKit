@@ -1,5 +1,12 @@
 #!/bin/bash
 echo "Executing entrypoint.sh"
+
+if [ -z "${SA_PASSWORD:-}" ]; then
+    echo "Error: SA_PASSWORD environment variable is required."
+    echo "Set it with Docker, ARM, or Terraform before starting the container."
+    exit 1
+fi
+
 # Start SQL Server in the background
 /opt/mssql/bin/sqlservr &
 
@@ -12,7 +19,7 @@ for sql_file in $SQL_SCRIPTS_PATH/*.sql; do
 
     # Execute SQL initialization script and capture output
     echo "Executing $sql_file"
-    OUTPUT=$( /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "<YourStrong!Passw0rd>" -i "$sql_file")
+    OUTPUT=$( /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -i "$sql_file")
 
     # Log output of script execution
     echo "Output of $sql_file:"

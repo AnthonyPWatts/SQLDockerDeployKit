@@ -3,6 +3,12 @@ provider "azurerm" {
   subscription_id = "e3861b68-a388-47fa-b00c-f4a7f5d2bc4c"
 }
 
+variable "sa_password" {
+  description = "Password for the SQL Server System Administrator account."
+  type        = string
+  sensitive   = true
+}
+
 resource "azurerm_resource_group" "database_rg" {
   name     = "database-resource-group"
   location = "UK South"
@@ -20,6 +26,10 @@ resource "azurerm_container_group" "database_container_group" {
     image  = "ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main"
     cpu    = 0.5
     memory = 2.0
+
+    secure_environment_variables = {
+      SA_PASSWORD = var.sa_password
+    }
 
     ports {
       port     = 1433
