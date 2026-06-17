@@ -116,9 +116,9 @@ For customisation or development:
 1. Fork or clone this repository as appropriate.
 2. If forked, change the sa password used in `Dockerfile` and in `entrypoint.sh`.
 3. Amend the SQL in src/SQLScripts as required. Note that the scripts are executed sequentially, so follow the 001, 002, 003 pattern.
-4. Build the Docker image from the src folder (you can replace 'sqldockerdeploykit' with your preferred image name): 
+4. Build the Docker image from the repository root (you can replace 'sqldockerdeploykit' with your preferred image name): 
 ```shell
-docker build -t sqldockerdeploykit .
+docker build -t sqldockerdeploykit -f src/Dockerfile .
 ```
 5. Run the Docker container: 
 ```shell
