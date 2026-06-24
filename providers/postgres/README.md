@@ -17,6 +17,17 @@ Run the provider smoke query from inside the container:
 docker exec sqldockerdeploykit-postgres psql -U postgres -d moviesdb -f /usr/local/share/sqldockerdeploykit/smoke-query.sql
 ```
 
+Deploy the published PostgreSQL image to Azure Container Instances by selecting
+the PostgreSQL provider in the shared templates:
+
+```shell
+terraform plan -var "database_provider=postgres" -var "sa_password=YourStrong!Passw0rd"
+terraform apply -var "database_provider=postgres" -var "sa_password=YourStrong!Passw0rd"
+```
+
+For ARM deployments, set `databaseProvider` to `postgres`. The shared password
+parameter is mapped to `POSTGRES_PASSWORD`.
+
 Connection details:
 
 - Host: `localhost`

@@ -2,12 +2,38 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "databaseProvider": {
+      "type": "string",
+      "defaultValue": "sqlserver",
+      "allowedValues": [
+        "sqlserver",
+        "postgres"
+      ],
+      "metadata": {
+        "description": "Database provider to deploy. SQL Server remains the default."
+      }
+    },
     "saPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password for the SQL Server System Administrator account."
+        "description": "Database administrator password. SQL Server uses this for the sa account; PostgreSQL uses this for the postgres account."
       }
     }
+  },
+  "variables": {
+    "providerSettings": {
+      "sqlserver": {
+        "image": "ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main",
+        "port": 1433,
+        "passwordEnvironmentVariable": "MSSQL_SA_PASSWORD"
+      },
+      "postgres": {
+        "image": "ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main",
+        "port": 5432,
+        "passwordEnvironmentVariable": "POSTGRES_PASSWORD"
+      }
+    },
+    "selectedProvider": "[variables('providerSettings')[parameters('databaseProvider')]]"
   },
   "resources": [
     {
@@ -20,7 +46,7 @@
           {
             "name": "databasecontainer",
             "properties": {
-              "image": "ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main",
+              "image": "[variables('selectedProvider').image]",
               "resources": {
                 "requests": {
                   "cpu": 0.5,
@@ -29,13 +55,13 @@
               },
               "environmentVariables": [
                 {
-                  "name": "MSSQL_SA_PASSWORD",
+                  "name": "[variables('selectedProvider').passwordEnvironmentVariable]",
                   "secureValue": "[parameters('saPassword')]"
                 }
               ],
               "ports": [
                 {
-                  "port": 1433
+                  "port": "[variables('selectedProvider').port]"
                 }
               ]
             }
@@ -48,7 +74,7 @@
           "ports": [
             {
               "protocol": "tcp",
-              "port": 1433
+              "port": "[variables('selectedProvider').port]"
             }
           ]
         }

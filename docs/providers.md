@@ -32,6 +32,28 @@ Use `MSSQL_SA_PASSWORD` for new SQL Server container runs. `SA_PASSWORD` remains
 accepted as a backwards-compatible alias for existing local, ARM, or Terraform
 usage.
 
+## Cloud Deployment Templates
+
+The ARM and Terraform templates both support the current providers. SQL Server
+remains the default to preserve the original Azure deployment path. PostgreSQL
+is selected explicitly with `databaseProvider=postgres` in ARM or
+`database_provider=postgres` in Terraform.
+
+| Provider | Cloud image | Public port | Secure password variable | Username | Database |
+| --- | --- | --- | --- | --- | --- |
+| SQL Server | `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main` | `1433` | `MSSQL_SA_PASSWORD` | `sa` | `MoviesDB` |
+| PostgreSQL | `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main` | `5432` | `POSTGRES_PASSWORD` | `postgres` | `moviesdb` |
+
+The Terraform variable remains named `sa_password` so existing SQL Server
+automation does not break. When PostgreSQL is selected, that value is mapped to
+`POSTGRES_PASSWORD`.
+
+The Azure Container Instances templates are intended for demonstrations,
+development, and smoke testing. They expose the database port publicly and do
+not configure persistent storage, private networking, TLS, firewall rules, or
+backup policy. Treat container group recreation as database recreation unless
+you add an explicit persistence design.
+
 ## Dialect Boundary
 
 Provider SQL is intentionally separate. SQL Server scripts use T-SQL features

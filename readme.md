@@ -4,7 +4,7 @@
 A small database-container deployment kit. SQL Server is the original and default provider, and the repository name is retained for continuity. The provider layout also includes PostgreSQL as the first additional engine. Ideal for rapid setup of database environments for development, testing, and demonstrations.
 
 ## Quicklinks
-### SQL Server ARM Quick Deploy
+### Azure ARM Quick Deploy
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FSQLDockerDeployKit%2Fmain%2Fsrc%2Fazure-resource-manager-template.json)
 
 ### GHCR Images
@@ -77,20 +77,34 @@ docker exec sqldockerdeploykit-postgres psql -U postgres -d moviesdb -f /usr/loc
 
 
 ### Option 2 - Quick Deploy to Azure with ARM Template
-#### SQL Server, default provider
-Deploy the latest build of the default SQL Server image (as generated in the CI/CD pipeline and deployed to GitHub Container Registry) to Azure Container Instances using the Azure Resource Manager (ARM) template. The template is configured to set up the SQL Server environment with reasonable default configurations and ports, and prompts for the SQL Server System Administrator password.
+The ARM template deploys the selected provider image to Azure Container
+Instances. SQL Server remains the default provider so existing one-click
+deployments continue to use the original SQL Server image, port, and
+`MSSQL_SA_PASSWORD` setting.
 
 Click the "Deploy to Azure" button below. You'll be redirected to the Azure portal.
 
 Fill in the necessary parameters and deploy.
 
+- For SQL Server, leave `databaseProvider` as `sqlserver`, then provide the
+  `saPassword` value. The template exposes port `1433` and sets
+  `MSSQL_SA_PASSWORD`.
+- For PostgreSQL, set `databaseProvider` to `postgres`, then provide the
+  `saPassword` value. The template exposes port `5432` and maps the password to
+  `POSTGRES_PASSWORD` for the `postgres` account.
+
 [![Deploy to Azure (ARM)](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FSQLDockerDeployKit%2Fmain%2Fsrc%2Fazure-resource-manager-template.json)
+
+Azure Container Instances caveat: this template is intended for demos,
+development, and smoke testing. It exposes the database port publicly and does
+not configure persistent storage, private networking, TLS, firewall rules, or
+backup policy. Recreating the container group recreates the database container.
 
 ---
 
 ### Option 3 - 'Quick' Deploy with Terraform
-#### SQL Server, default provider
-If you want to deploy the default SQL Server provider using Terraform for infrastructure as code, first ensure you are authenticated with Azure.
+If you want to deploy a provider using Terraform for infrastructure as code,
+first ensure you are authenticated with Azure.
 
 1. Log in to your Azure account:
     ```shell
@@ -114,23 +128,48 @@ Once authenticated, proceed with the Terraform steps outlined below.
    ```shell
    terraform init
    ```
-4. Review the execution plan to ensure the resources will be created as expected:
+4. Review the execution plan to ensure the resources will be created as expected.
+   SQL Server is the default provider:
    ```shell
    terraform plan -var "sa_password=YourStrong!Passw0rd"
    ```
-5. Apply the Terraform configuration to deploy the resources:
+   To deploy PostgreSQL instead, set `database_provider`:
+   ```shell
+   terraform plan -var "database_provider=postgres" -var "sa_password=YourStrong!Passw0rd"
+   ```
+   The `sa_password` variable name is retained for SQL Server compatibility. For
+   PostgreSQL deployments it supplies `POSTGRES_PASSWORD` for the `postgres`
+   account.
+5. Apply the Terraform configuration to deploy the resources. For SQL Server:
    ```shell
    terraform apply -var "sa_password=YourStrong!Passw0rd"
    ```
+   For PostgreSQL:
+   ```shell
+   terraform apply -var "database_provider=postgres" -var "sa_password=YourStrong!Passw0rd"
+   ```
    Confirm the prompt with `yes` to proceed with the deployment.
 
-Once the deployment is complete, Terraform will output the public DNS name of the container group. Use this DNS name to connect to the SQL Server instance.
+Once the deployment is complete, Terraform outputs the selected provider, public
+DNS name, endpoint, database name, and administrator username.
 
-Example connection details:
+Example SQL Server connection details:
 - Server: `<DNS_NAME>:1433`
 - Authentication: SQL Server Authentication
 - Username: `sa`
+- Database: `MoviesDB`
 - Password: the `sa_password` value supplied to Terraform.
+
+Example PostgreSQL connection details:
+- Server: `<DNS_NAME>`
+- Port: `5432`
+- Database: `moviesdb`
+- Username: `postgres`
+- Password: the `sa_password` value supplied to Terraform.
+
+The Terraform template has the same Azure Container Instances caveat as the ARM
+template: it is a public, non-durable demo/test deployment rather than a
+production database architecture.
 
 ---
 
@@ -149,7 +188,7 @@ docker run --name myDatabaseContainer -d -p 1433:1433 -e "MSSQL_SA_PASSWORD=Your
 ```
 6. For SQL Server, `MSSQL_SA_PASSWORD` is the preferred password environment variable. `SA_PASSWORD` remains accepted as a backwards-compatible alias.
 7. For PostgreSQL, build with `providers/postgres/Dockerfile` and use `POSTGRES_PASSWORD` plus port `5432`.
-8. Use or amend the provided IaC (infrastructure as code, e.g. ARM, Terraform) templates for SQL Server cloud deployments. PostgreSQL cloud deployment templates are not included yet.
+8. Use or amend the provided IaC (infrastructure as code, e.g. ARM, Terraform) templates for SQL Server or PostgreSQL cloud deployments.
 
 ---
 
