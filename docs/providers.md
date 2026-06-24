@@ -38,6 +38,10 @@ compatibility:
 - the Movies demo data is present;
 - a smoke query returns row counts for the expected tables.
 
+CI runs `scripts/smoke-test-provider.sh` for every provider image before
+publishing. The smoke test starts the image, runs the provider's smoke query,
+and asserts the expected `5:5:5` Movies demo row counts.
+
 ## Adding Another Provider
 
 Add a new folder under `providers/<engine>` with the provider's Dockerfile,

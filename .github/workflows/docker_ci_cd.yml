@@ -25,9 +25,11 @@ jobs:
           - provider: sqlserver
             image_name: ${{ github.repository }}/database-container
             dockerfile: ./src/Dockerfile
+            smoke_image: sqldockerdeploykit-ci-sqlserver
           - provider: postgres
             image_name: ${{ github.repository }}/database-container-postgres
             dockerfile: ./providers/postgres/Dockerfile
+            smoke_image: sqldockerdeploykit-ci-postgres
 
     steps:
       - name: Checkout repository
@@ -35,6 +37,12 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
+      - name: Build smoke-test image
+        run: docker build -t "${{ matrix.smoke_image }}:${{ github.sha }}" -f "${{ matrix.dockerfile }}" .
+
+      - name: Smoke test image
+        run: bash ./scripts/smoke-test-provider.sh "${{ matrix.provider }}" "${{ matrix.smoke_image }}:${{ github.sha }}"
 
       - name: Log in to the Container registry
         if: github.event_name == 'push'
@@ -58,5 +66,3 @@ jobs:
           push: ${{ github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      # Optional: Add steps to run tests here

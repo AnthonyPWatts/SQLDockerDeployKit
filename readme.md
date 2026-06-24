@@ -39,7 +39,7 @@ SQLDockerDeployKit users can significantly reduce the time and effort required t
 
 
 ### GitHub Repository Features
-Any commits to the main branch trigger updates for this project's configured [GitHub Container Registry images](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit).
+Any commits to the main branch trigger smoke-tested updates for this project's configured [GitHub Container Registry images](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit).
 
 
 ## Deployment Options

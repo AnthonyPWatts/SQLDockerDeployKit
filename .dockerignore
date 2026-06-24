@@ -1,0 +1,12 @@
+.git
+.github
+.vs
+
+docs
+project-docs
+
+**/.terraform
+**/.terraform/**
+**/*.tfstate
+**/*.tfstate.*
+src/.terraform.lock.hcl
