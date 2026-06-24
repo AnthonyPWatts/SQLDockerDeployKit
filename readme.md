@@ -1,53 +1,76 @@
-# SQLDockerDeployKit Project
+# SQLDockerDeployKit
 
-## Description
-A small database-container deployment kit. SQL Server is the original and default provider, and the repository name is retained for continuity. The provider layout also includes PostgreSQL as the first additional engine, with local Docker, ARM, and Terraform support. Ideal for rapid setup of database environments for development, testing, and demonstrations.
+[![Docker CI/CD](https://github.com/AnthonyPWatts/SQLDockerDeployKit/actions/workflows/docker_ci_cd.yml/badge.svg)](https://github.com/AnthonyPWatts/SQLDockerDeployKit/actions/workflows/docker_ci_cd.yml)
+![SQL Server 2022](https://img.shields.io/badge/SQL%20Server-2022-CC2927)
+![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-336791)
+[![Licence: Public Domain](https://img.shields.io/badge/licence-public%20domain-brightgreen.svg)](#licence)
+
+Smoke-tested database containers for repeatable local, demo, training, and
+Azure Container Instances environments. SQL Server 2022 is the default provider
+for continuity with the original project; PostgreSQL is available through the
+provider layout for teams that need a second engine.
+
+The kit standardises the container lifecycle: build an image, start a database,
+run bootstrap scripts, wait for readiness, and prove the Movies demo data is
+queryable. It does not pretend SQL dialects are portable. Provider-specific SQL,
+credentials, ports, readiness checks, and smoke queries are documented in
+[docs/providers.md](docs/providers.md).
+
+## Choose Your Path
+
+| If you need... | Start here | Result |
+| --- | --- | --- |
+| A local SQL Server demo database | [Quick Start with Docker](#option-1---quick-start-with-docker) | `MoviesDB` on `localhost,1433` |
+| A local PostgreSQL demo database | [PostgreSQL provider](#postgresql-provider) | `moviesdb` on `localhost:5432` |
+| A one-click Azure demo | [ARM Quick Deploy](#option-2---quick-deploy-to-azure-with-arm-template) | Azure Container Instances with the selected provider |
+| Repeatable Azure infrastructure | [Terraform deployment](#option-3---quick-deploy-with-terraform) | Provider-aware ACI deployment outputs |
+| Provider internals | [Database Provider Model](docs/providers.md) | Build, smoke-test, and extension details |
 
 ## Quicklinks
-### Azure ARM Quick Deploy
+
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FSQLDockerDeployKit%2Fmain%2Fsrc%2Fazure-resource-manager-template.json)
 
-### GHCR Images
-- SQL Server default image: `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main`
-- PostgreSQL image: `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main`
-- [Package list](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit)
+| Image | Provider | Published tag |
+| --- | --- | --- |
+| `database-container` | SQL Server | `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main` |
+| `database-container-postgres` | PostgreSQL | `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main` |
 
-## Overview
-SQLDockerDeployKit is a tool designed to streamline the setup and deployment of database containers, catering to use cases from development and testing to live demonstrations. The project keeps its historical SQLDockerDeployKit name while organising current work around database providers. SQL Server 2022 is the default provider baseline and existing SQL Server usage is preserved. PostgreSQL is available as an additional provider for local and Azure Container Instances deployments.
+Browse the [GitHub Container Registry package list](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit)
+for published image metadata.
 
-The project standardises the container lifecycle rather than pretending all database SQL is portable. Provider-specific SQL, credentials, ports, readiness checks, and smoke queries are documented separately in [docs/providers.md](docs/providers.md).
+## How It Fits Together
 
-Whether you are a developer, a database administrator, or a student learning relational databases, SQLDockerDeployKit offers a quick and easy way to get your database up and running with minimal setup.
+```mermaid
+flowchart LR
+    sqlserver["SQL Server provider<br/>src/Dockerfile<br/>MoviesDB on 1433"]
+    postgres["PostgreSQL provider<br/>providers/postgres<br/>moviesdb on 5432"]
+    smoke["CI smoke contract<br/>5:5:5 Movies demo rows"]
+    ghcr["Published GHCR images"]
+    docker["Local Docker"]
+    arm["Azure ARM"]
+    terraform["Terraform"]
 
-### Key Features and Advantages
-- Ease of use: provision a ready-to-query database container with a small set of Docker, ARM, or Terraform commands.
-- Provider support: SQL Server 2022 remains the default provider, with PostgreSQL available through the provider layout.
-- Customisation: adapt the provider SQL scripts to deploy different schemas and seed data.
-- Verification: CI builds and smoke-tests the configured provider images before publishing the public images on `main`.
+    sqlserver --> smoke
+    postgres --> smoke
+    smoke --> ghcr
+    ghcr --> docker
+    ghcr --> arm
+    ghcr --> terraform
+```
 
-### Intended Users
-- Software Developers: Quickly integrate and test database interactions with your applications without the overhead of complex database setup procedures.
-- Database Administrators and DBA Students: Learn and experiment with relational database configurations, performance tuning, and security settings in a controlled, easily resettable environment.
-- Demo and Training Providers: Create consistent, reproducible database environments for training sessions, workshops, or product demonstrations, ensuring that all participants have a uniform starting point.
+## What Is Included
 
-### Use Cases
-- Application Development: Streamline the development process by quickly setting up and tearing down database environments, allowing more time to focus on application logic and user experience.
-- Testing Environments: Easily create and duplicate test databases to isolate test cases, ensuring accurate and reliable results.
-- Educational Purposes: Provide students with a simple way to access and manage relational databases, facilitating hands-on learning and experimentation.
-- Demo Environments: Showcase software products or data-driven applications in a stable, controlled environment, enhancing the impact of your presentations.
-
-SQLDockerDeployKit users can significantly reduce the time and effort required to provision database containers, allowing them to focus on their core activities, whether it be development, testing, learning, or showcasing products.
-
-
-### GitHub Repository Features
-Any commits to the main branch trigger smoke-tested updates for this project's configured [GitHub Container Registry images](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit).
-
+- Ready-to-run SQL Server and PostgreSQL demo images.
+- Provider-specific bootstrap scripts, smoke queries, ports, and credentials.
+- ARM and Terraform templates for Azure Container Instances demos.
+- CI that builds and smoke-tests provider images before publishing from `main`.
+- A provider model that keeps SQL dialect differences explicit and maintainable.
 
 ## Deployment Options
 ### Option 1 - Quick Start with Docker
 #### SQL Server, default provider
 If you want to work with the unchanged example MoviesDB locally, pull the default SQL Server image from the GitHub Container Registry:
-```shell 
+```shell
 docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 ```
 
