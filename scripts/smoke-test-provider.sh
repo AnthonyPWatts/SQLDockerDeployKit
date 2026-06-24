@@ -26,18 +26,34 @@ trim_last_non_empty_line() {
     awk 'NF { line = $0 } END { gsub(/^[ \t]+|[ \t]+$/, "", line); print line }'
 }
 
+sqlserver_exec() {
+    docker exec -e "SQLDDK_SMOKE_PASSWORD=$PASSWORD" "$CONTAINER" bash -lc '
+        set -euo pipefail
+
+        if command -v sqlcmd >/dev/null 2>&1; then
+            SQLCMD="$(command -v sqlcmd)"
+        elif [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
+            SQLCMD=/opt/mssql-tools18/bin/sqlcmd
+        elif [ -x /opt/mssql-tools/bin/sqlcmd ]; then
+            SQLCMD=/opt/mssql-tools/bin/sqlcmd
+        else
+            echo "sqlcmd was not found in the SQL Server image." >&2
+            exit 1
+        fi
+
+        "$SQLCMD" -b -C -S localhost -U SA -P "$SQLDDK_SMOKE_PASSWORD" "$@"
+    ' bash "$@"
+}
+
 assert_sqlserver_counts() {
     local result
 
-    docker exec "$CONTAINER" \
-        /opt/mssql-tools/bin/sqlcmd \
-        -b -S localhost -U SA -P "$PASSWORD" \
+    sqlserver_exec \
         -i /tmp/app/provider/smoke-query.sql >/dev/null 2>&1
 
     result="$(
-        docker exec "$CONTAINER" \
-            /opt/mssql-tools/bin/sqlcmd \
-            -b -h -1 -W -S localhost -U SA -P "$PASSWORD" \
+        sqlserver_exec \
+            -h -1 -W \
             -Q "SET NOCOUNT ON; USE MoviesDB; SELECT CAST((SELECT COUNT(*) FROM Movies) AS varchar(10)) + ':' + CAST((SELECT COUNT(*) FROM Actors) AS varchar(10)) + ':' + CAST((SELECT COUNT(*) FROM MoviesActors) AS varchar(10));" 2>/dev/null |
             tr -d '\r' |
             trim_last_non_empty_line
@@ -94,7 +110,7 @@ trap cleanup EXIT
 
 case "$PROVIDER" in
     sqlserver)
-        docker run --name "$CONTAINER" -d -e "SA_PASSWORD=$PASSWORD" "$IMAGE" >/dev/null
+        docker run --name "$CONTAINER" -d -e "MSSQL_SA_PASSWORD=$PASSWORD" "$IMAGE" >/dev/null
         wait_for_smoke assert_sqlserver_counts
         ;;
     postgres)

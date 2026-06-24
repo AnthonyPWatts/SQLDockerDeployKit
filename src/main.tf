@@ -28,7 +28,7 @@ resource "azurerm_container_group" "database_container_group" {
     memory = 2.0
 
     secure_environment_variables = {
-      SA_PASSWORD = var.sa_password
+      MSSQL_SA_PASSWORD = var.sa_password
     }
 
     ports {

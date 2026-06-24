@@ -19,8 +19,18 @@ Each provider should document and implement:
 
 | Provider | Image path | Port | Credentials | Bootstrap scripts | Smoke query |
 | --- | --- | --- | --- | --- | --- |
-| SQL Server | `src/Dockerfile` or `providers/sqlserver/Dockerfile` | `1433` | `sa` / `SA_PASSWORD` | `src/SQLScripts/*.sql` | `providers/sqlserver/smoke-query.sql` |
+| SQL Server | `src/Dockerfile` or `providers/sqlserver/Dockerfile` | `1433` | `sa` / `MSSQL_SA_PASSWORD` | `src/SQLScripts/*.sql` | `providers/sqlserver/smoke-query.sql` |
 | PostgreSQL | `providers/postgres/Dockerfile` | `5432` | `postgres` / `POSTGRES_PASSWORD` | `providers/postgres/scripts/*.sql` | `providers/postgres/smoke-query.sql` |
+
+## SQL Server Baseline
+
+The default SQL Server provider uses `mcr.microsoft.com/mssql/server:2022-latest`.
+This keeps the default image on a supported, established major version without
+moving consumers to the newer SQL Server 2025 line by surprise.
+
+Use `MSSQL_SA_PASSWORD` for new SQL Server container runs. `SA_PASSWORD` remains
+accepted as a backwards-compatible alias for existing local, ARM, or Terraform
+usage.
 
 ## Dialect Boundary
 
@@ -38,9 +48,10 @@ compatibility:
 - the Movies demo data is present;
 - a smoke query returns row counts for the expected tables.
 
-CI runs `scripts/smoke-test-provider.sh` for every provider image before
-publishing. The smoke test starts the image, runs the provider's smoke query,
-and asserts the expected `5:5:5` Movies demo row counts.
+CI runs `scripts/smoke-test-provider.sh` before publishing. The smoke test starts
+the image, runs the provider's smoke query, and asserts the expected `5:5:5`
+Movies demo row counts. The workflow covers the legacy `src/Dockerfile`, the
+provider-layout SQL Server Dockerfile, and the PostgreSQL provider Dockerfile.
 
 ## Adding Another Provider
 

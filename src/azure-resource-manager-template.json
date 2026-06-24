@@ -29,7 +29,7 @@
               },
               "environmentVariables": [
                 {
-                  "name": "SA_PASSWORD",
+                  "name": "MSSQL_SA_PASSWORD",
                   "secureValue": "[parameters('saPassword')]"
                 }
               ],

@@ -1,20 +1,14 @@
-# Use the official Microsoft SQL Server 2019 image as the base image
-FROM mcr.microsoft.com/mssql/server:2019-latest
+# Use the official Microsoft SQL Server 2022 image as the base image
+FROM mcr.microsoft.com/mssql/server:2022-latest
 
 # Set the required environment variables for SQL Server
 ENV ACCEPT_EULA=Y
 
+# Make sqlcmd available whether the base image exposes mssql-tools18 or the older tools path.
+ENV PATH=${PATH}:/opt/mssql-tools18/bin:/opt/mssql-tools/bin
 
-# Temporarily switch to root for package installation
+# Temporarily switch to root for filesystem setup
 USER root
-
-# Update package lists and install required tools
-RUN apt-get update && apt-get install -y \
-    mssql-tools unixodbc-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Add mssql-tools to the PATH variable
-ENV PATH=${PATH}:/opt/mssql-tools/bin
 
 # Create needed directories
 RUN mkdir -p /tmp/app/SQLScripts /tmp/app/provider

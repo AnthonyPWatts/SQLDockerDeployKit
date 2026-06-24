@@ -3,13 +3,37 @@ set -euo pipefail
 
 echo "Executing entrypoint.sh"
 
-if [ -z "${SA_PASSWORD:-}" ]; then
-    echo "Error: SA_PASSWORD environment variable is required."
+SQL_SA_PASSWORD="${MSSQL_SA_PASSWORD:-${SA_PASSWORD:-}}"
+if [ -z "$SQL_SA_PASSWORD" ]; then
+    echo "Error: MSSQL_SA_PASSWORD environment variable is required."
     echo "Set it with Docker, ARM, or Terraform before starting the container."
     exit 1
 fi
 
-SQLCMD="/opt/mssql-tools/bin/sqlcmd"
+export MSSQL_SA_PASSWORD="$SQL_SA_PASSWORD"
+export SA_PASSWORD="$SQL_SA_PASSWORD"
+
+find_sqlcmd() {
+    if command -v sqlcmd >/dev/null 2>&1; then
+        command -v sqlcmd
+        return 0
+    fi
+
+    if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
+        echo /opt/mssql-tools18/bin/sqlcmd
+        return 0
+    fi
+
+    if [ -x /opt/mssql-tools/bin/sqlcmd ]; then
+        echo /opt/mssql-tools/bin/sqlcmd
+        return 0
+    fi
+
+    echo "Error: sqlcmd was not found in the SQL Server image." >&2
+    return 1
+}
+
+SQLCMD="$(find_sqlcmd)"
 SQL_READY_TIMEOUT_SECONDS="${SQL_READY_TIMEOUT_SECONDS:-120}"
 SQL_READY_POLL_SECONDS="${SQL_READY_POLL_SECONDS:-2}"
 SQLSERVR_PID=""
@@ -41,7 +65,7 @@ wait_for_sql_server() {
             exit "$sqlservr_exit_code"
         fi
 
-        if "$SQLCMD" -b -S localhost -U SA -P "$SA_PASSWORD" -Q "SELECT 1" >/dev/null 2>&1; then
+        if "$SQLCMD" -b -C -S localhost -U SA -P "$SQL_SA_PASSWORD" -Q "SELECT 1" >/dev/null 2>&1; then
             echo "SQL Server is ready."
             return 0
         fi
@@ -70,7 +94,7 @@ for sql_file in "$SQL_SCRIPTS_PATH"/*.sql; do
 
     # Execute SQL initialization script and capture output
     echo "Executing $sql_file"
-    if OUTPUT=$( "$SQLCMD" -b -S localhost -U SA -P "$SA_PASSWORD" -i "$sql_file" 2>&1); then
+    if OUTPUT=$( "$SQLCMD" -b -C -S localhost -U SA -P "$SQL_SA_PASSWORD" -i "$sql_file" 2>&1); then
 
         # Log output of script execution
         echo "Output of $sql_file:"

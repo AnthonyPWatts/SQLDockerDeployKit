@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-and-push-image:
-    name: Build ${{ matrix.provider }} image
+    name: Build ${{ matrix.name }} image
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,14 +22,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - provider: sqlserver
+          - name: sqlserver
+            provider: sqlserver
             image_name: ${{ github.repository }}/database-container
             dockerfile: ./src/Dockerfile
             smoke_image: sqldockerdeploykit-ci-sqlserver
-          - provider: postgres
+            publish: true
+          - name: sqlserver-provider-layout
+            provider: sqlserver
+            image_name: ${{ github.repository }}/database-container-sqlserver-provider
+            dockerfile: ./providers/sqlserver/Dockerfile
+            smoke_image: sqldockerdeploykit-ci-sqlserver-provider
+            publish: false
+          - name: postgres
+            provider: postgres
             image_name: ${{ github.repository }}/database-container-postgres
             dockerfile: ./providers/postgres/Dockerfile
             smoke_image: sqldockerdeploykit-ci-postgres
+            publish: true
 
     steps:
       - name: Checkout repository
@@ -45,7 +55,7 @@ jobs:
         run: bash ./scripts/smoke-test-provider.sh "${{ matrix.provider }}" "${{ matrix.smoke_image }}:${{ github.sha }}"
 
       - name: Log in to the Container registry
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && matrix.publish
         uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
@@ -53,12 +63,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
+        if: matrix.publish
         id: meta
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ matrix.image_name }}
 
       - name: Build and push Docker image
+        if: matrix.publish
         uses: docker/build-push-action@v7
         with:
           context: .

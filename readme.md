@@ -12,7 +12,7 @@ A small database-container deployment kit. The original and default path deploys
 - PostgreSQL image: `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main`
 
 ## Overview
-SQLDockerDeployKit is a tool designed to streamline the setup and deployment of database containers, catering to use cases from development and testing to live demonstrations. SQL Server remains the default provider and existing SQL Server usage is preserved. PostgreSQL is available as a provider-specific template.
+SQLDockerDeployKit is a tool designed to streamline the setup and deployment of database containers, catering to use cases from development and testing to live demonstrations. SQL Server 2022 is the default provider baseline and existing SQL Server usage is preserved. PostgreSQL is available as a provider-specific template.
 
 The project standardises the container lifecycle rather than pretending all database SQL is portable. Provider-specific SQL, credentials, ports, readiness checks, and smoke queries are documented separately in [docs/providers.md](docs/providers.md).
 
@@ -52,13 +52,13 @@ docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 
 Start the Docker container in detached mode (-d) and map port 1433 from the container to port 1433 on the host machine, allowing SQL Server connections:
 ```shell
-docker run -d -p 1433:1433 -e "SA_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
+docker run -d -p 1433:1433 -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 ```
 
 Run the SQL Server smoke query:
 
 ```shell
-docker exec <container-name-or-id> /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "YourStrong!Passw0rd" -i /tmp/app/provider/smoke-query.sql
+docker exec <container-name-or-id> bash -lc 'sqlcmd -C -S localhost -U SA -P "YourStrong!Passw0rd" -i /tmp/app/provider/smoke-query.sql'
 ```
 
 #### PostgreSQL provider
@@ -145,10 +145,11 @@ docker build -t sqldockerdeploykit -f src/Dockerfile .
 ```
 5. Run the Docker container:
 ```shell
-docker run --name myDatabaseContainer -d -p 1433:1433 -e "SA_PASSWORD=YourStrong!Passw0rd" sqldockerdeploykit
+docker run --name myDatabaseContainer -d -p 1433:1433 -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" sqldockerdeploykit
 ```
-6. For PostgreSQL, build with `providers/postgres/Dockerfile` and use `POSTGRES_PASSWORD` plus port `5432`.
-7. Use or amend the provided IaC (infrastructure as code, e.g. ARM, Terraform) templates for SQL Server cloud deployments. PostgreSQL cloud deployment templates are not included yet.
+6. For SQL Server, `MSSQL_SA_PASSWORD` is the preferred password environment variable. `SA_PASSWORD` remains accepted as a backwards-compatible alias.
+7. For PostgreSQL, build with `providers/postgres/Dockerfile` and use `POSTGRES_PASSWORD` plus port `5432`.
+8. Use or amend the provided IaC (infrastructure as code, e.g. ARM, Terraform) templates for SQL Server cloud deployments. PostgreSQL cloud deployment templates are not included yet.
 
 ---
 
@@ -157,7 +158,7 @@ Connect to the SQL Server instance using tools like Azure Data Studio (soon to b
 - Server: e.g., `localhost,1433`
 - Authentication: SQL Server Authentication
 - Username: `sa`
-- Password: the `SA_PASSWORD` value supplied when the container was started.
+- Password: the `MSSQL_SA_PASSWORD` value supplied when the container was started.
 
 ![ADS Connection](project-docs/images/ads-connected-local.png "Azure Data Studio Local Connection")
 
