@@ -17,13 +17,14 @@ RUN apt-get update && apt-get install -y \
 ENV PATH=${PATH}:/opt/mssql-tools/bin
 
 # Create needed directories
-RUN mkdir -p /tmp/app/SQLScripts
+RUN mkdir -p /tmp/app/SQLScripts /tmp/app/provider
 
 # Set working directory
 WORKDIR /tmp/app
 
 # Copy scripts into container - didn't work so currently attempting the whole src folder
 COPY src /tmp/app/src/
+COPY providers/sqlserver/smoke-query.sql /tmp/app/provider/smoke-query.sql
 
 # Grant execute permissions on the entrypoint script
 RUN chmod +x /tmp/app/src/entrypoint.sh && chown -R mssql /tmp/app
