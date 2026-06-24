@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 echo "Executing entrypoint.sh"
 
 if [ -z "${SA_PASSWORD:-}" ]; then
@@ -15,22 +17,23 @@ sleep 30s
 
 # Run the initialization script from the correct location
 SQL_SCRIPTS_PATH="/tmp/app/src/SQLScripts"
-for sql_file in $SQL_SCRIPTS_PATH/*.sql; do
+for sql_file in "$SQL_SCRIPTS_PATH"/*.sql; do
 
     # Execute SQL initialization script and capture output
     echo "Executing $sql_file"
-    OUTPUT=$( /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -i "$sql_file")
+    if OUTPUT=$( /opt/mssql-tools/bin/sqlcmd -b -S localhost -U SA -P "$SA_PASSWORD" -i "$sql_file" 2>&1); then
 
-    # Log output of script execution
-    echo "Output of $sql_file:"
-    echo "$OUTPUT"
-
-    # Check if any errors occurred during script execution
-    if [[ "$OUTPUT" == *"Error"* ]]; then
-        echo "Error: An error occurred during script execution."
-        # TODO: Exit the loop or handle the error as needed
-    else
+        # Log output of script execution
+        echo "Output of $sql_file:"
+        echo "$OUTPUT"
         echo "Script execution successful."
+
+    else
+        SQLCMD_EXIT_CODE=$?
+        echo "Output of $sql_file:"
+        echo "$OUTPUT"
+        echo "Error: SQL initialization script failed: $sql_file"
+        exit "$SQLCMD_EXIT_CODE"
     fi
 
 done
