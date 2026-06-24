@@ -3,6 +3,33 @@
 SQLDockerDeployKit standardises a database container lifecycle. It does not try
 to hide database dialect differences behind generic SQL.
 
+## Provider Picker
+
+| Choose | When you want | Published image |
+| --- | --- | --- |
+| SQL Server | The default MoviesDB demo, SQL Server tooling, or backwards-compatible repository behaviour | `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main` |
+| PostgreSQL | The same demo shape on PostgreSQL, port `5432`, and native PostgreSQL bootstrap behaviour | `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main` |
+
+## Container Lifecycle
+
+```mermaid
+flowchart LR
+    choose["Choose provider"]
+    build["Build or pull image"]
+    start["Start container"]
+    bootstrap["Run provider bootstrap scripts"]
+    ready["Wait for provider readiness"]
+    smoke["Run smoke query"]
+    use["Connect, demo, test, or extend"]
+
+    choose --> build
+    build --> start
+    start --> bootstrap
+    bootstrap --> ready
+    ready --> smoke
+    smoke --> use
+```
+
 Each provider should document and implement:
 
 - image build command;
@@ -19,8 +46,8 @@ Each provider should document and implement:
 
 | Provider | Image path | Port | Credentials | Bootstrap scripts | Smoke query |
 | --- | --- | --- | --- | --- | --- |
-| SQL Server | `src/Dockerfile` or `providers/sqlserver/Dockerfile` | `1433` | `sa` / `MSSQL_SA_PASSWORD` | `src/SQLScripts/*.sql` | `providers/sqlserver/smoke-query.sql` |
-| PostgreSQL | `providers/postgres/Dockerfile` | `5432` | `postgres` / `POSTGRES_PASSWORD` | `providers/postgres/scripts/*.sql` | `providers/postgres/smoke-query.sql` |
+| [SQL Server](../providers/sqlserver/README.md) | `src/Dockerfile` or `providers/sqlserver/Dockerfile` | `1433` | `sa` / `MSSQL_SA_PASSWORD` | `src/SQLScripts/*.sql` | `providers/sqlserver/smoke-query.sql` |
+| [PostgreSQL](../providers/postgres/README.md) | `providers/postgres/Dockerfile` | `5432` | `postgres` / `POSTGRES_PASSWORD` | `providers/postgres/scripts/*.sql` | `providers/postgres/smoke-query.sql` |
 
 ## SQL Server Baseline
 
