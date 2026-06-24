@@ -4,7 +4,14 @@ The PostgreSQL provider uses the official PostgreSQL image and keeps PostgreSQL
 SQL separate from the SQL Server scripts. The provider shares the kit's
 bootstrap lifecycle, but not the SQL dialect.
 
-Build and run from the repository root:
+Run the published PostgreSQL image from GHCR:
+
+```shell
+docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main
+docker run --name sqldockerdeploykit-postgres -d -p 5432:5432 -e "POSTGRES_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main
+```
+
+Or build and run from the repository root:
 
 ```shell
 docker build -t sqldockerdeploykit-postgres -f providers/postgres/Dockerfile .
@@ -37,9 +44,20 @@ Connection details:
 - Password environment variable: `POSTGRES_PASSWORD`
 - Bootstrap scripts: `providers/postgres/scripts/*.sql`, executed by the official PostgreSQL entrypoint on first database initialisation
 
+Readiness:
+
+- the image includes a Docker `HEALTHCHECK` using `pg_isready`;
+- the official PostgreSQL entrypoint runs bootstrap scripts before the server is ready for normal use.
+
 PostgreSQL only runs files in `/docker-entrypoint-initdb.d` when the data
 directory is empty. If you mount a persistent volume, remove or recreate that
 volume before expecting bootstrap scripts to run again.
+
+Run the CI-style smoke helper against a locally built image:
+
+```shell
+bash scripts/smoke-test-provider.sh postgres sqldockerdeploykit-postgres
+```
 
 Cleanup:
 

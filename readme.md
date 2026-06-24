@@ -1,28 +1,29 @@
 # SQLDockerDeployKit Project
 
 ## Description
-A small database-container deployment kit. SQL Server is the original and default provider, and the repository name is retained for continuity. The provider layout also includes PostgreSQL as the first additional engine. Ideal for rapid setup of database environments for development, testing, and demonstrations.
+A small database-container deployment kit. SQL Server is the original and default provider, and the repository name is retained for continuity. The provider layout also includes PostgreSQL as the first additional engine, with local Docker, ARM, and Terraform support. Ideal for rapid setup of database environments for development, testing, and demonstrations.
 
 ## Quicklinks
 ### Azure ARM Quick Deploy
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAnthonyPWatts%2FSQLDockerDeployKit%2Fmain%2Fsrc%2Fazure-resource-manager-template.json)
 
 ### GHCR Images
-- [Default SQL Server image](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit)
+- SQL Server default image: `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main`
 - PostgreSQL image: `ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main`
+- [Package list](https://github.com/AnthonyPWatts?tab=packages&repo_name=SQLDockerDeployKit)
 
 ## Overview
-SQLDockerDeployKit is a tool designed to streamline the setup and deployment of database containers, catering to use cases from development and testing to live demonstrations. The project keeps its historical SQLDockerDeployKit name while organising current work around database providers. SQL Server 2022 is the default provider baseline and existing SQL Server usage is preserved. PostgreSQL is available as a local provider-specific template.
+SQLDockerDeployKit is a tool designed to streamline the setup and deployment of database containers, catering to use cases from development and testing to live demonstrations. The project keeps its historical SQLDockerDeployKit name while organising current work around database providers. SQL Server 2022 is the default provider baseline and existing SQL Server usage is preserved. PostgreSQL is available as an additional provider for local and Azure Container Instances deployments.
 
 The project standardises the container lifecycle rather than pretending all database SQL is portable. Provider-specific SQL, credentials, ports, readiness checks, and smoke queries are documented separately in [docs/providers.md](docs/providers.md).
 
 Whether you are a developer, a database administrator, or a student learning relational databases, SQLDockerDeployKit offers a quick and easy way to get your database up and running with minimal setup.
 
 ### Key Features and Advantages
-- Ease of Use: With a focus on simplicity, SQLDockerDeployKit allows for the quick provisioning of database containers, eliminating the complexities traditionally associated with database setup.
-- Flexibility: The tool supports multiple deployment options, including local Docker environments and cloud-based solutions like Azure. This flexibility ensures that users can select the deployment method that best suits their needs.
-- Customisation: Users can easily adapt the tool to deploy different database schemas and utilise automated SQL scripts for database initialisation.
-- Rapid Development and Testing: The tool is an excellent asset for developers and QA engineers looking for a fast way to spin up database containers for application development, testing, or bug reproduction.
+- Ease of use: provision a ready-to-query database container with a small set of Docker, ARM, or Terraform commands.
+- Provider support: SQL Server 2022 remains the default provider, with PostgreSQL available through the provider layout.
+- Customisation: adapt the provider SQL scripts to deploy different schemas and seed data.
+- Verification: CI builds and smoke-tests the configured provider images before publishing the public images on `main`.
 
 ### Intended Users
 - Software Developers: Quickly integrate and test database interactions with your applications without the overhead of complex database setup procedures.
@@ -52,17 +53,24 @@ docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 
 Start the Docker container in detached mode (-d) and map port 1433 from the container to port 1433 on the host machine, allowing SQL Server connections:
 ```shell
-docker run -d -p 1433:1433 -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
+docker run --name sqldockerdeploykit-sqlserver -d -p 1433:1433 -e "MSSQL_SA_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container:main
 ```
 
 Run the SQL Server smoke query:
 
 ```shell
-docker exec <container-name-or-id> bash -lc 'sqlcmd -C -S localhost -U SA -P "YourStrong!Passw0rd" -i /tmp/app/provider/smoke-query.sql'
+docker exec sqldockerdeploykit-sqlserver bash -lc 'sqlcmd -C -S localhost -U SA -P "YourStrong!Passw0rd" -i /tmp/app/provider/smoke-query.sql'
 ```
 
 #### PostgreSQL provider
-Build and run the PostgreSQL provider locally:
+If you want the published PostgreSQL MoviesDB image, pull and run the PostgreSQL provider from the GitHub Container Registry:
+
+```shell
+docker pull ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main
+docker run --name sqldockerdeploykit-postgres -d -p 5432:5432 -e "POSTGRES_PASSWORD=YourStrong!Passw0rd" ghcr.io/anthonypwatts/sqldockerdeploykit/database-container-postgres:main
+```
+
+Alternatively, for provider development, build and run the PostgreSQL image locally from the repository root:
 
 ```shell
 docker build -t sqldockerdeploykit-postgres -f providers/postgres/Dockerfile .
@@ -121,14 +129,17 @@ first ensure you are authenticated with Azure.
     az account show
     ```
 
+   If the browser login flow is awkward in a terminal-only session, use `az login --use-device-code` instead.
+
 Once authenticated, proceed with the Terraform steps outlined below.
 1. Ensure you have [Terraform installed](https://developer.hashicorp.com/terraform/downloads) on your system.
 2. Navigate to the `src` folder where the `main.tf` file is located.
-3. Initialise Terraform to download the required providers:
+3. Check the `subscription_id` value in `src/main.tf`. Change it to the subscription you want to use, or remove the line to rely on the active Azure CLI subscription.
+4. Initialise Terraform to download the required providers:
    ```shell
    terraform init
    ```
-4. Review the execution plan to ensure the resources will be created as expected.
+5. Review the execution plan to ensure the resources will be created as expected.
    SQL Server is the default provider:
    ```shell
    terraform plan -var "sa_password=YourStrong!Passw0rd"
@@ -140,7 +151,7 @@ Once authenticated, proceed with the Terraform steps outlined below.
    The `sa_password` variable name is retained for SQL Server compatibility. For
    PostgreSQL deployments it supplies `POSTGRES_PASSWORD` for the `postgres`
    account.
-5. Apply the Terraform configuration to deploy the resources. For SQL Server:
+6. Apply the Terraform configuration to deploy the resources. For SQL Server:
    ```shell
    terraform apply -var "sa_password=YourStrong!Passw0rd"
    ```
@@ -176,8 +187,8 @@ production database architecture.
 ## Extending and Customising SQLDockerDeployKit
 For customisation or development:
 1. Fork or clone this repository as appropriate.
-2. Choose the provider you want to customise. SQL Server remains under `src` for backwards compatibility; PostgreSQL lives under `providers/postgres`.
-3. Amend the provider's SQL scripts as required. Scripts are executed sequentially, so follow the `001`, `002`, `003` filename pattern.
+2. Choose the provider you want to customise. SQL Server remains under `src` for backwards compatibility and is also represented under `providers/sqlserver`; PostgreSQL lives under `providers/postgres`.
+3. Amend the provider's SQL scripts as required. Follow the `001`, `002`, `003` filename pattern. SQL Server scripts are executed by `src/entrypoint.sh` on each container start, so keep them idempotent or use fresh containers. PostgreSQL scripts are executed by the official PostgreSQL entrypoint when the data directory is first initialised.
 4. Build the Docker image from the repository root. For SQL Server:
 ```shell
 docker build -t sqldockerdeploykit -f src/Dockerfile .
@@ -189,12 +200,17 @@ docker run --name myDatabaseContainer -d -p 1433:1433 -e "MSSQL_SA_PASSWORD=Your
 6. For SQL Server, `MSSQL_SA_PASSWORD` is the preferred password environment variable. `SA_PASSWORD` remains accepted as a backwards-compatible alias.
 7. For PostgreSQL, build with `providers/postgres/Dockerfile` and use `POSTGRES_PASSWORD` plus port `5432`.
 8. Use or amend the provided IaC (infrastructure as code, e.g. ARM, Terraform) templates for SQL Server or PostgreSQL cloud deployments.
+9. Run the CI-style smoke test before publishing or sharing a changed image:
+```shell
+bash scripts/smoke-test-provider.sh sqlserver sqldockerdeploykit
+bash scripts/smoke-test-provider.sh postgres sqldockerdeploykit-postgres
+```
 
 ---
 
 ## Connecting to the Database
 ### SQL Server
-Connect to the default SQL Server instance using tools like Azure Data Studio (soon to be retired/incorporated into VSCode) or SQL Server Management Studio:
+Connect to the default SQL Server instance using tools like SQL Server Management Studio, Azure Data Studio where available, or suitable VS Code SQL tooling:
 - Server: e.g., `localhost,1433`
 - Authentication: SQL Server Authentication
 - Username: `sa`
